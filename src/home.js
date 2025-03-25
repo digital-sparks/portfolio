@@ -51,7 +51,7 @@ window.Webflow.push(() => {
     spaceBetween: 16,
     grabCursor: true,
     loop: true,
-    loopAdditionalSlides: 3,
+    loopAddBlankSlides: true,
     speed: 350,
     breakpoints: {
       768: {
