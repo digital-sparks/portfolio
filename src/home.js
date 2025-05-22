@@ -196,7 +196,7 @@ window.Webflow.push(() => {
             end: `top ${offset + servicesTopWrapperHeight + gapBetweenElements - 100}px`,
             scrub: 1,
             animation: gsap.to(servicesTopWrapper, {
-              autoAlpha: 0,
+              opacity: 0,
               duration: 0.3,
               ease: 'power2.out',
             }),
