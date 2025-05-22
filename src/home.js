@@ -42,6 +42,23 @@ window.Webflow.push(() => {
     }
   });
 
+  const slideCount = document.querySelectorAll('.testimonial_slide').length;
+
+  document.querySelectorAll('.testimonial_slide').forEach((slide) => {
+    const clonedSlide = slide.cloneNode(true);
+    document.querySelector('.testimonial_wrapper').appendChild(clonedSlide);
+  });
+
+  // Create pagination bullets upfront (only the original count)
+  const paginationContainer = document.querySelector('.swiper-controls_pagination');
+  paginationContainer.innerHTML = '';
+  for (let i = 0; i < slideCount; i++) {
+    const bullet = document.createElement('span');
+    bullet.className = 'pagination-bullet';
+    bullet.dataset.index = i;
+    paginationContainer.appendChild(bullet);
+  }
+
   let testimonialSwiper = new Swiper('.testimonial_container', {
     modules: [Mousewheel, Keyboard, Pagination, Navigation],
     wrapperClass: 'testimonial_wrapper',
@@ -51,8 +68,7 @@ window.Webflow.push(() => {
     spaceBetween: 16,
     grabCursor: true,
     loop: true,
-    loopAddBlankSlides: true,
-    loopAdditionalSlides: 7,
+    initialSlide: slideCount - 1,
     speed: 350,
     breakpoints: {
       768: {
@@ -69,13 +85,6 @@ window.Webflow.push(() => {
       enabled: true,
       onlyInViewport: true,
     },
-    pagination: {
-      el: '.swiper-controls_pagination',
-      type: 'bullets',
-      bulletClass: 'pagination-bullet',
-      bulletActiveClass: 'is-active',
-      clickable: true,
-    },
     navigation: {
       nextEl: document.querySelectorAll('.navigation-button')[1],
       prevEl: document.querySelectorAll('.navigation-button')[0],
@@ -84,8 +93,29 @@ window.Webflow.push(() => {
       beforeInit: function (swiper) {
         swiper.wrapperEl.style.gridColumnGap = 'unset';
       },
+      init: function (swiper) {
+        // Set initial active bullet
+        updateActiveBullet(swiper);
+      },
+      slideChange: function (swiper) {
+        updateActiveBullet(swiper);
+      },
     },
   });
+
+  // Helper function to update the active bullet
+  function updateActiveBullet(swiper) {
+    // Get current actual index and map it to the original slide count range
+    const mappedIndex = swiper.realIndex % slideCount;
+
+    // Remove active class from all bullets
+    document.querySelectorAll('.pagination-bullet').forEach((bullet) => {
+      bullet.classList.remove('is-active');
+    });
+
+    // Add active class to the correct bullet
+    document.querySelectorAll('.pagination-bullet')[mappedIndex].classList.add('is-active');
+  }
 
   ScrollTrigger.create({
     trigger: '.testimonial_container',
@@ -94,5 +124,196 @@ window.Webflow.push(() => {
     onEnter: () => {
       testimonialSwiper.slideNext();
     },
+  });
+
+  const debounce = (func, wait) => {
+    let timeout;
+    return (...args) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func(...args), wait);
+    };
+  };
+
+  gsap.matchMedia().add('(min-width: 992px)', () => {
+    const scrollCards = gsap.utils.toArray('.scroll_card-item');
+    const cardButtons = gsap.utils.toArray('.scroll_card-item .button');
+    const nav = document.querySelector('.nav_component');
+    const servicesTopWrapper = document.querySelector('.services_top-wrapper');
+    const scrollComponent = document.querySelector('.scroll_component');
+    const servicesSection = document.querySelector('.section_services');
+    const scrollTriggers = [];
+    const offset = 160;
+
+    const checkScrollCardsFit = () => {
+      const viewportHeight = window.innerHeight - offset;
+      const servicesTopWrapperHeight = servicesTopWrapper ? servicesTopWrapper.offsetHeight : 0;
+      const gapBetweenElements = 64; // 4rem gap between services wrapper and cards
+
+      // Find the tallest card
+      const tallestCardHeight = scrollCards.reduce(
+        (maxHeight, card) => Math.max(maxHeight, card.offsetHeight),
+        0
+      );
+
+      // Check if both services wrapper and tallest card fit together (including gap)
+      const bothFit =
+        servicesTopWrapper &&
+        servicesTopWrapperHeight + gapBetweenElements + tallestCardHeight + 40 <= viewportHeight; // 40px extra buffer
+
+      // Check if just the tallest card fits (without services wrapper)
+      const onlyCardsFit = tallestCardHeight <= viewportHeight;
+
+      // Set sticky position for services top wrapper if both fit
+      if (servicesTopWrapper) {
+        gsap.set(servicesTopWrapper, {
+          position: bothFit ? 'sticky' : 'static',
+          top: bothFit ? `${offset / 16}rem` : 'auto',
+        });
+      }
+
+      // Calculate top position for cards based on which elements are sticky
+      const cardTopPosition = bothFit
+        ? `${(offset + servicesTopWrapperHeight + gapBetweenElements) / 16}rem` // Position after services wrapper + 4rem gap
+        : `${offset / 16}rem`; // Default position
+
+      // Set card positions
+      scrollCards.forEach((card) => {
+        gsap.set(card, {
+          position: bothFit || onlyCardsFit ? 'sticky' : 'static',
+          top: bothFit || onlyCardsFit ? cardTopPosition : 'auto',
+        });
+      });
+
+      // Create a scroll trigger to handle the services wrapper visibility
+      // when reaching the last card
+      if (scrollTriggers.length === 0 && bothFit && scrollCards.length > 0) {
+        const lastCard = scrollCards[scrollCards.length - 1];
+
+        scrollTriggers.push(
+          ScrollTrigger.create({
+            trigger: lastCard,
+            start: 'top-=100 top',
+            onEnter: () => {
+              // When the last card enters the viewport, hide or adjust the services wrapper
+              gsap.to(servicesTopWrapper, {
+                autoAlpha: 0,
+                duration: 0.3,
+                ease: 'power2.out',
+              });
+            },
+            onLeaveBack: () => {
+              // When scrolling back up, show the services wrapper again
+              gsap.to(servicesTopWrapper, {
+                autoAlpha: 1,
+                duration: 0.3,
+                ease: 'power2.out',
+              });
+            },
+          })
+        );
+      }
+    };
+
+    const setupScrollAnimation = () => {
+      // Add navigation animation for the services section
+      // if (servicesSection && nav) {
+      //   scrollTriggers.push(
+      //     ScrollTrigger.create({
+      //       trigger: servicesSection,
+      //       start: 'top top',
+      //       end: 'bottom bottom',
+      //       onEnter: () => {
+      //         // Hide navigation when entering the section
+      //         gsap.to(nav, {
+      //           yPercent: -100,
+      //           ease: 'power2.out',
+      //           duration: 0.5,
+      //         });
+      //       },
+      //       onEnterBack: () => {
+      //         // Hide navigation when scrolling back up into the section
+      //         gsap.to(nav, {
+      //           yPercent: -100,
+      //           ease: 'power2.out',
+      //           duration: 0.5,
+      //         });
+      //       },
+      //       onLeaveBack: () => {
+      //         // Show navigation when scrolling above the section
+      //         gsap.to(nav, {
+      //           yPercent: 0,
+      //           ease: 'power2.out',
+      //           duration: 0.5,
+      //         });
+      //       },
+      //       onLeave: () => {
+      //         // Show navigation when scrolling past the section
+      //         gsap.to(nav, {
+      //           yPercent: 0,
+      //           ease: 'power2.out',
+      //           duration: 0.5,
+      //         });
+      //       },
+      //     })
+      //   );
+      // }
+
+      scrollCards.forEach((card, index) => {
+        if (index !== scrollCards.length - 1) {
+          scrollTriggers.push(
+            ScrollTrigger.create({
+              animation: gsap.to(card, {
+                scale: 0.85,
+                opacity: 0.5,
+                transformOrigin: 'center 25%',
+                ease: 'none',
+              }),
+              scrub: true,
+              trigger: card,
+              start: `10% ${offset}px`,
+              end: 'bottom 64px',
+              onLeave: () => gsap.set(card, { opacity: 0 }),
+            })
+          );
+        }
+      });
+
+      // Add a scroll trigger for the final card to ensure it's always visible
+      if (scrollCards.length > 0) {
+        const lastCard = scrollCards[scrollCards.length - 1];
+        scrollTriggers.push(
+          ScrollTrigger.create({
+            trigger: lastCard,
+            start: 'top bottom',
+            end: 'bottom top',
+            onEnter: () => {
+              // Make sure the last card is fully visible
+              gsap.set(lastCard, { opacity: 1, scale: 1 });
+            },
+          })
+        );
+      }
+    };
+
+    checkScrollCardsFit();
+    setupScrollAnimation();
+    window.addEventListener('resize', debounce(checkScrollCardsFit, 250));
+
+    return () => {
+      gsap.set([...scrollCards, '.scroll_card-grid > div:last-child', nav, servicesTopWrapper], {
+        clearProps: 'all',
+      });
+      gsap.set(scrollCards, {
+        position: 'static',
+        top: 'auto',
+      });
+      if (servicesTopWrapper) {
+        gsap.set(servicesTopWrapper, {
+          position: 'static',
+          top: 'auto',
+        });
+      }
+      scrollTriggers.forEach((trigger) => trigger.kill());
+    };
   });
 });
