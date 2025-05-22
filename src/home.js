@@ -192,23 +192,14 @@ window.Webflow.push(() => {
         scrollTriggers.push(
           ScrollTrigger.create({
             trigger: lastCard,
-            start: 'top-=100 top',
-            onEnter: () => {
-              // When the last card enters the viewport, hide or adjust the services wrapper
-              gsap.to(servicesTopWrapper, {
-                autoAlpha: 0,
-                duration: 0.3,
-                ease: 'power2.out',
-              });
-            },
-            onLeaveBack: () => {
-              // When scrolling back up, show the services wrapper again
-              gsap.to(servicesTopWrapper, {
-                autoAlpha: 1,
-                duration: 0.3,
-                ease: 'power2.out',
-              });
-            },
+            start: `top ${offset + servicesTopWrapperHeight + gapBetweenElements}px`,
+            end: `top ${offset + servicesTopWrapperHeight + gapBetweenElements - 100}px`,
+            scrub: 1,
+            animation: gsap.to(servicesTopWrapper, {
+              autoAlpha: 0,
+              duration: 0.3,
+              ease: 'power2.out',
+            }),
           })
         );
       }
@@ -259,40 +250,22 @@ window.Webflow.push(() => {
       // }
 
       scrollCards.forEach((card, index) => {
-        if (index !== scrollCards.length - 1) {
-          scrollTriggers.push(
-            ScrollTrigger.create({
-              animation: gsap.to(card, {
-                scale: 0.85,
-                opacity: 0.5,
-                transformOrigin: 'center 25%',
-                ease: 'none',
-              }),
-              scrub: true,
-              trigger: card,
-              start: `10% ${offset}px`,
-              end: 'bottom 64px',
-              onLeave: () => gsap.set(card, { opacity: 0 }),
-            })
-          );
-        }
-      });
-
-      // Add a scroll trigger for the final card to ensure it's always visible
-      if (scrollCards.length > 0) {
-        const lastCard = scrollCards[scrollCards.length - 1];
         scrollTriggers.push(
           ScrollTrigger.create({
-            trigger: lastCard,
-            start: 'top bottom',
-            end: 'bottom top',
-            onEnter: () => {
-              // Make sure the last card is fully visible
-              gsap.set(lastCard, { opacity: 1, scale: 1 });
-            },
+            animation: gsap.to(card, {
+              scale: 0.85,
+              opacity: 0.5,
+              transformOrigin: 'center 25%',
+              ease: 'none',
+            }),
+            scrub: true,
+            trigger: card,
+            start: `10% ${offset}px`,
+            end: 'bottom 64px',
+            onLeave: () => gsap.set(card, { opacity: 0 }),
           })
         );
-      }
+      });
     };
 
     checkScrollCardsFit();
