@@ -142,7 +142,7 @@ window.Webflow.push(() => {
     const scrollComponent = document.querySelector('.scroll_component');
     const servicesSection = document.querySelector('.section_services');
     const scrollTriggers = [];
-    const offset = 160;
+    const offset = 96; //184;
 
     const checkScrollCardsFit = () => {
       const viewportHeight = window.innerHeight - offset;
@@ -207,47 +207,51 @@ window.Webflow.push(() => {
 
     const setupScrollAnimation = () => {
       // Add navigation animation for the services section
-      // if (servicesSection && nav) {
-      //   scrollTriggers.push(
-      //     ScrollTrigger.create({
-      //       trigger: servicesSection,
-      //       start: 'top top',
-      //       end: 'bottom bottom',
-      //       onEnter: () => {
-      //         // Hide navigation when entering the section
-      //         gsap.to(nav, {
-      //           yPercent: -100,
-      //           ease: 'power2.out',
-      //           duration: 0.5,
-      //         });
-      //       },
-      //       onEnterBack: () => {
-      //         // Hide navigation when scrolling back up into the section
-      //         gsap.to(nav, {
-      //           yPercent: -100,
-      //           ease: 'power2.out',
-      //           duration: 0.5,
-      //         });
-      //       },
-      //       onLeaveBack: () => {
-      //         // Show navigation when scrolling above the section
-      //         gsap.to(nav, {
-      //           yPercent: 0,
-      //           ease: 'power2.out',
-      //           duration: 0.5,
-      //         });
-      //       },
-      //       onLeave: () => {
-      //         // Show navigation when scrolling past the section
-      //         gsap.to(nav, {
-      //           yPercent: 0,
-      //           ease: 'power2.out',
-      //           duration: 0.5,
-      //         });
-      //       },
-      //     })
-      //   );
-      // }
+      if (servicesSection && nav) {
+        scrollTriggers.push(
+          ScrollTrigger.create({
+            trigger: servicesSection,
+            start: 'top 120',
+            end: 'bottom 120',
+            onEnter: () => {
+              // Hide navigation when entering the section
+              gsap.to(nav, {
+                yPercent: -100,
+                opacity: 1,
+                ease: 'power1.out',
+                duration: 0.35,
+              });
+            },
+            onEnterBack: () => {
+              // Hide navigation when scrolling back up into the section
+              gsap.to(nav, {
+                yPercent: -100,
+                opacity: 1,
+                ease: 'power1.out',
+                duration: 0.35,
+              });
+            },
+            onLeaveBack: () => {
+              // Show navigation when scrolling above the section
+              gsap.to(nav, {
+                yPercent: 0,
+                opacity: 1,
+                ease: 'power1.out',
+                duration: 0.35,
+              });
+            },
+            onLeave: () => {
+              // Show navigation when scrolling past the section
+              gsap.to(nav, {
+                yPercent: 0,
+                opacity: 1,
+                ease: 'power1.out',
+                duration: 0.35,
+              });
+            },
+          })
+        );
+      }
 
       scrollCards.forEach((card, index) => {
         scrollTriggers.push(
