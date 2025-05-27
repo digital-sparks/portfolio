@@ -2,14 +2,16 @@ window.Webflow ||= [];
 window.Webflow.push(() => {
   // HIDE EXIT INTENT AND SET OPACITY TO 0
   const exitIntent = document.getElementById('exit-intent');
+  const hasTriggered =
+    window.sessionStorage.get(`hasFiredPopup_${window.location}`) == 'true' ? true : false;
 
-  if (exitIntent) {
+  if (!hasTriggered && exitIntent) {
     exitIntent.style.display = 'none';
     exitIntent.style.opacity = 0;
 
     // Trigger Popup on exit intent
     document.addEventListener('mouseleave', (e) => {
-      if (e.clientY < 0) showExitIntent('exit_page');
+      if (e.clientY < 0 && timer > 8000) showExitIntent('exit_page');
     });
 
     // Trigger Popup after XXX milliseconds
@@ -39,6 +41,7 @@ window.Webflow.push(() => {
         });
 
         hasFiredPopup = true;
+        window.sessionStorage.setItem(`hasFiredPopup_${window.location}`, 'true');
       }
     }
   }
