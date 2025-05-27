@@ -3,7 +3,7 @@ window.Webflow.push(() => {
   // HIDE EXIT INTENT AND SET OPACITY TO 0
   const exitIntent = document.getElementById('exit-intent');
   const hasTriggered =
-    window.sessionStorage.get(`hasFiredPopup_${window.location}`) == 'true' ? true : false;
+    window.sessionStorage.getItem(`hasFiredPopup_${window.location}`) == 'true' ? true : false;
 
   if (!hasTriggered && exitIntent) {
     exitIntent.style.display = 'none';
