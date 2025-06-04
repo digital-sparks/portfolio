@@ -15,7 +15,7 @@ window.Webflow.push(() => {
     });
 
     // Trigger Popup after XXX milliseconds
-    const minutes = 0.33;
+    const minutes = 0.5;
     const timerInterval = 5000; // in milliseconds
     let timer = 0;
     let hasFiredPopup = false;
