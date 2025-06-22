@@ -15,7 +15,7 @@ window.Webflow.push(() => {
     });
 
     // Trigger Popup after XXX milliseconds
-    const minutes = 0.5;
+    const minutes = 0.75;
     const timerInterval = 5000; // in milliseconds
     let timer = 0;
     let hasFiredPopup = false;
@@ -44,6 +44,75 @@ window.Webflow.push(() => {
         window.sessionStorage.setItem(`hasFiredPopup_${window.location}`, 'true');
       }
     }
+  }
+
+  // ... existing code ...
+  const exitIntentAuditStep1 = document.querySelector('#wf-form-audit-popup-step-1');
+
+  if (exitIntentAuditStep1) {
+    exitIntentAuditStep1.addEventListener('submit', (event) => {
+      event.preventDefault(); // Prevent form submission if needed
+
+      const emailVal = exitIntentAuditStep1.querySelector('#email').value;
+
+      document.querySelectorAll('input[name="audit_email_identifier"]').forEach((input) => {
+        input.value = emailVal;
+      });
+
+      // Calculate completion date
+      const completionDate = calculateCompletionDate();
+      document.querySelector('#audit_completion_date').textContent =
+        formatFriendlyDate(completionDate);
+
+      document.querySelector('.modal_step2').style.display = 'block';
+    });
+
+    document.getElementById('wf-form-audit-popup-step-2').addEventListener('submit', () => {
+      document.querySelector('.modal_step3').style.display = 'block';
+    });
+
+    document.getElementById('wf-form-audit-popup-step-3').addEventListener('submit', () => {
+      document.querySelector('.modal_step4').style.display = 'block';
+    });
+  }
+
+  function calculateCompletionDate() {
+    const now = new Date();
+    let completionDate = new Date(now.getTime() + 48 * 60 * 60 * 1000); // Add 48 hours
+
+    // Adjust for weekends
+    while (completionDate.getDay() === 0 || completionDate.getDay() === 6) {
+      completionDate.setDate(completionDate.getDate() + 1);
+    }
+
+    return completionDate;
+  }
+
+  function formatFriendlyDate(date) {
+    const months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+
+    const day = date.getDate();
+    const month = months[date.getMonth()];
+
+    let suffix = 'th';
+    if (day === 1 || day === 21 || day === 31) suffix = 'st';
+    else if (day === 2 || day === 22) suffix = 'nd';
+    else if (day === 3 || day === 23) suffix = 'rd';
+
+    return `${month} ${day}${suffix}`;
   }
 
   /*-------------------------------------------------------*/
