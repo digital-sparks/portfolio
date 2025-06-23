@@ -64,14 +64,17 @@ window.Webflow.push(() => {
       document.querySelector('#audit_completion_date').textContent =
         formatFriendlyDate(completionDate);
 
+      document.querySelector('.modal_step1').style.display = 'none';
       document.querySelector('.modal_step2').style.display = 'block';
     });
 
     document.getElementById('wf-form-audit-popup-step-2').addEventListener('submit', () => {
+      document.querySelector('.modal_step2').style.display = 'none';
       document.querySelector('.modal_step3').style.display = 'block';
     });
 
     document.getElementById('wf-form-audit-popup-step-3').addEventListener('submit', () => {
+      document.querySelector('.modal_step3').style.display = 'none';
       document.querySelector('.modal_step4').style.display = 'block';
     });
   }
