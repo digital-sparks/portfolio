@@ -26,15 +26,16 @@ window.Webflow.push(() => {
 
   const button = document.querySelector('.portfolio_component .button');
   const items = document.querySelectorAll('.portfolio_component .portfolio_item');
-  let itemShown = 4;
+  let itemShown = document.querySelectorAll('.portfolio_component .portfolio_item:is-visible');
+  let incrementer = window.innerWidth > 991 ? 6 : 4;
 
   button.addEventListener('click', () => {
     // Show next 4 items
-    for (let i = itemShown; i < itemShown + 4 && i < items.length; i++) {
-      items[i].style.display = 'block';
+    for (let i = itemShown; i < itemShown + incrementer && i < items.length; i++) {
+      items[i].style.display = 'flex';
     }
 
-    itemShown += 4;
+    itemShown += incrementer;
 
     // If all items are shown, hide the button
     if (itemShown >= items.length) {
