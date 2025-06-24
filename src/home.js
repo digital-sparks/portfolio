@@ -27,11 +27,12 @@ window.Webflow.push(() => {
   const button = document.querySelector('.portfolio_component .button');
   const items = document.querySelectorAll('.portfolio_component .portfolio_item');
   let incrementer = window.innerWidth > 991 ? 6 : 4;
+  let itemShown = incrementer;
 
   button.addEventListener('click', () => {
-    // Show next items
+    // Show next 4 items
     for (let i = itemShown; i < itemShown + incrementer && i < items.length; i++) {
-      items[i].style.display = 'flex';
+      items[i].style.display = 'block';
     }
 
     itemShown += incrementer;
