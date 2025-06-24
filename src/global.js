@@ -51,8 +51,9 @@ window.Webflow.push(() => {
 
   if (exitIntentAuditStep1) {
     const completionDate = calculateCompletionDate();
-    document.querySelectorAll('#audit_completion_date, #audit_completion_date2').textContent =
-      formatFriendlyDate(completionDate);
+    document.querySelectorAll('#audit_completion_date, #audit_completion_date2').forEach((el) => {
+      el.textContent = formatFriendlyDate(completionDate);
+    });
     document.querySelector('input[name="audit_completion_date"]').value = completionDate;
     document.querySelector('input[name="audit_completion_date_text"]').value =
       formatFriendlyDate(completionDate);
