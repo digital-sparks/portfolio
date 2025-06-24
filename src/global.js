@@ -50,6 +50,13 @@ window.Webflow.push(() => {
   const exitIntentAuditStep1 = document.querySelector('#wf-form-audit-popup-step-1');
 
   if (exitIntentAuditStep1) {
+    const completionDate = calculateCompletionDate();
+    document.querySelectorAll('#audit_completion_date, #audit_completion_date2').textContent =
+      formatFriendlyDate(completionDate);
+    document.querySelector('input[name="audit_completion_date"]').value = completionDate;
+    document.querySelector('input[name="audit_completion_date_text"]').value =
+      formatFriendlyDate(completionDate);
+
     exitIntentAuditStep1.addEventListener('submit', (event) => {
       event.preventDefault(); // Prevent form submission if needed
 
@@ -58,13 +65,6 @@ window.Webflow.push(() => {
       document.querySelectorAll('input[name="audit_email_identifier"]').forEach((input) => {
         input.value = emailVal;
       });
-
-      // Calculate completion date
-      const completionDate = calculateCompletionDate();
-      document.querySelector('#audit_completion_date').textContent =
-        formatFriendlyDate(completionDate);
-      document.querySelector('#audit_completion_date2').textContent =
-        formatFriendlyDate(completionDate);
 
       document.querySelector('.modal_step1').style.display = 'none';
       document.querySelector('.modal_step2').style.display = 'block';
