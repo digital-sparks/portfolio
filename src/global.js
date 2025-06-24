@@ -63,6 +63,8 @@ window.Webflow.push(() => {
       const completionDate = calculateCompletionDate();
       document.querySelector('#audit_completion_date').textContent =
         formatFriendlyDate(completionDate);
+      document.querySelector('#audit_completion_date2').textContent =
+        formatFriendlyDate(completionDate);
 
       document.querySelector('.modal_step1').style.display = 'none';
       document.querySelector('.modal_step2').style.display = 'block';
