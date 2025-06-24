@@ -32,7 +32,7 @@ window.Webflow.push(() => {
   button.addEventListener('click', () => {
     // Show next 4 items
     for (let i = itemShown; i < itemShown + incrementer && i < items.length; i++) {
-      items[i].style.display = 'block';
+      items[i].style.display = 'flex';
     }
 
     itemShown += incrementer;
