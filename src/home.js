@@ -1,12 +1,202 @@
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Observer } from 'gsap/Observer';
 import Swiper from 'swiper';
 import { Navigation, Pagination, Mousewheel, Keyboard } from 'swiper/modules';
 
 window.Webflow ||= [];
 window.Webflow.push(() => {
-  // gsap.registerPlugin(Observer);
-  gsap.registerPlugin(ScrollTrigger);
+  gsap.registerPlugin(Observer, ScrollTrigger);
+
+  document.querySelectorAll('.case-study_slide').forEach((slide, index) => {
+    const defaultWrap = slide.querySelector('.case-study_default-wrap');
+    const hoverWrap = slide.querySelector('.case-study_hover-wrap');
+    const cursor = slide.querySelector('.case-study_popup-open-button');
+    const row1 = slide.querySelectorAll(
+      '.case-study_hover-content h3, .case-study_hover-content .case-study_metrics-wrap'
+    );
+    const row2 = slide.querySelector('.case-study_hover-image-wrap');
+    const counterElements = slide.querySelectorAll('.case-study_metrics-item .heading-style-h4');
+
+    gsap.set(hoverWrap, { display: 'none', opacity: 0 });
+    gsap.set(cursor, {
+      y: '0.25rem',
+      x: '-0.25rem',
+    });
+    gsap.set(row1, { yPercent: 15, opacity: 0 });
+    gsap.set([row2], { yPercent: 5, opacity: 0 });
+    console.log(row1);
+
+    let hasAnimatedNumbers = false;
+
+    slide.addEventListener('mouseenter', () => {
+      gsap
+        .timeline()
+        .to(hoverWrap, {
+          display: 'block',
+          opacity: 1,
+          duration: 0.3,
+        })
+        .to(
+          cursor,
+          {
+            y: '0rem',
+            x: '0rem',
+            ease: 'power2.out',
+            delay: 0.1,
+            duration: 0.4,
+          },
+          '<-0.2'
+        )
+        .to(
+          row1,
+          {
+            yPercent: 0,
+            opacity: 1,
+            ease: 'power2.out',
+            duration: 0.6,
+          },
+          '<0.1'
+        )
+        .to(
+          row2,
+          {
+            yPercent: 0,
+            opacity: 1,
+            ease: 'power2.out',
+            duration: 0.6,
+          },
+          '<+0.1'
+        );
+
+      if (!hasAnimatedNumbers) {
+        counterElements.forEach((element) => {
+          const text = element.textContent;
+          const match = text.match(/\d+/);
+
+          if (match) {
+            const targetNumber = parseInt(match[0], 10);
+            const prefix = text.slice(0, match.index);
+            const suffix = text.slice(match.index + match[0].length);
+
+            // Create a proxy object to animate
+            const obj = { value: 0 };
+            element.textContent = prefix + obj.value + suffix;
+
+            gsap.to(obj, {
+              scrollTrigger: {
+                trigger: element,
+                start: 'center bottom',
+                // markers: true,
+              },
+              value: targetNumber,
+              duration: 5, // Animation duration in seconds
+              ease: 'power3.out', // You can change this easing function
+              onUpdate: function () {
+                const currentValue = Math.round(obj.value);
+                element.textContent = prefix + currentValue + suffix;
+              },
+              onComplete: function () {
+                element.textContent = prefix + targetNumber + suffix;
+              },
+            });
+          }
+        });
+        hasAnimatedNumbers = true;
+      }
+
+      hoverWrap.addEventListener('click', () => {
+        const ariaId = hoverWrap.getAttribute('aria-controls');
+        const popup = document.getElementById(ariaId);
+        const modal = popup.querySelector('.popup_complete-modal');
+        const exitEls = popup.querySelectorAll('[fs-modal-element^="close"]');
+
+        gsap.fromTo(
+          modal,
+          {
+            y: '5rem',
+            scale: 0.98,
+          },
+          {
+            y: '0rem',
+            duration: 0.6,
+            scale: 1,
+            ease: 'power3.out',
+          }
+        );
+
+        exitEls.forEach((el) => {
+          el.addEventListener('click', () => {
+            gsap.to(modal, {
+              y: '5rem',
+              scale: 0.98,
+              duration: 0.4,
+              delay: 0.1,
+              ease: 'power3.out',
+            });
+          });
+        });
+      });
+    });
+
+    slide.addEventListener('mouseleave', () => {
+      gsap
+        .timeline()
+        .to(row2, {
+          yPercent: 5,
+          opacity: 0,
+          ease: 'power2.in',
+          duration: 0.4,
+        })
+        .to(
+          row1,
+          {
+            yPercent: 15,
+            opacity: 0,
+            ease: 'power2.in',
+            duration: 0.4,
+          },
+          '<+0.1'
+        )
+        .to(
+          cursor,
+          {
+            y: '0.25rem',
+            x: '-0.25rem',
+            ease: 'power2.in',
+            duration: 0.3,
+          },
+          '<'
+        )
+        .to(
+          hoverWrap,
+          {
+            opacity: 0,
+            onComplete: () => {
+              gsap.set(hoverWrap, { display: 'none' });
+            },
+          },
+          '<'
+        );
+    });
+
+    cursor.addEventListener('mouseenter', () => {
+      gsap.to(cursor, {
+        x: '0.25rem',
+        y: '-0.25rem',
+        duration: 0.3,
+        ease: 'power2.out',
+      });
+    });
+    cursor.addEventListener('mouseleave', () => {
+      gsap.to(cursor, {
+        x: '0rem',
+        y: '0rem',
+        duration: 0.2,
+        ease: 'power2.out',
+      });
+    });
+  });
 
   // ————— MARQUEE SLIDER  ————— //
 
@@ -24,24 +214,68 @@ window.Webflow.push(() => {
   });
   // ————— MARQUEE SLIDER  ————— //
 
-  const button = document.querySelector('.portfolio_component .button');
-  const items = document.querySelectorAll('.portfolio_component .portfolio_item');
-  let incrementer = window.innerWidth > 991 ? 6 : 4;
-  let itemShown = incrementer;
-
-  button.addEventListener('click', () => {
-    // Show next 4 items
-    for (let i = itemShown; i < itemShown + incrementer && i < items.length; i++) {
-      items[i].style.display = 'flex';
-    }
-
-    itemShown += incrementer;
-
-    // If all items are shown, hide the button
-    if (itemShown >= items.length) {
-      button.parentNode.style.display = 'none';
-    }
+  const caseStudySwiper = new Swiper('.case-study_container', {
+    modules: [Mousewheel, Keyboard, Pagination, Navigation],
+    wrapperClass: 'case-study_wrapper',
+    slideClass: 'case-study_slide',
+    slidesPerView: 'auto',
+    direction: 'horizontal',
+    spaceBetween: 16,
+    grabCursor: true,
+    loop: false,
+    speed: 350,
+    breakpoints: {
+      768: {
+        spaceBetween: 24,
+        speed: 500,
+      },
+    },
+    mousewheel: {
+      enabled: true,
+      forceToAxis: true,
+      thresholdDelta: 5,
+    },
+    keyboard: {
+      enabled: true,
+      onlyInViewport: true,
+    },
+    navigation: {
+      nextEl: document.querySelectorAll('.section_case-studies .navigation-button')[1],
+      prevEl: document.querySelectorAll('.section_case-studies .navigation-button')[0],
+    },
+    pagination: {
+      el: '.section_case-studies .swiper-controls_pagination',
+      bulletClass: 'pagination-bullet',
+      bulletActiveClass: 'is-active',
+      renderBullet: function (index, className) {
+        return '<span class="' + className + ' is-dark"></span>';
+      },
+    },
+    on: {
+      beforeInit: function (swiper) {
+        swiper.wrapperEl.style.gridColumnGap = 'unset';
+      },
+    },
   });
+
+  // const button = document.querySelector('.portfolio_component .button');
+  // const items = document.querySelectorAll('.portfolio_component .portfolio_item');
+  // let incrementer = window.innerWidth > 991 ? 6 : 4;
+  // let itemShown = incrementer;
+
+  // button.addEventListener('click', () => {
+  //   // Show next 4 items
+  //   for (let i = itemShown; i < itemShown + incrementer && i < items.length; i++) {
+  //     items[i].style.display = 'flex';
+  //   }
+
+  //   itemShown += incrementer;
+
+  //   // If all items are shown, hide the button
+  //   if (itemShown >= items.length) {
+  //     button.parentNode.style.display = 'none';
+  //   }
+  // });
 
   const slideCount = document.querySelectorAll('.testimonial_slide').length;
 
@@ -86,9 +320,13 @@ window.Webflow.push(() => {
       enabled: true,
       onlyInViewport: true,
     },
+    pagination: {
+      bulletClass: 'pagination-bullet',
+      bulletActiveClass: 'is-active',
+    },
     navigation: {
-      nextEl: document.querySelectorAll('.navigation-button')[1],
-      prevEl: document.querySelectorAll('.navigation-button')[0],
+      nextEl: document.querySelectorAll('.section_success-stories .navigation-button')[1],
+      prevEl: document.querySelectorAll('.section_success-stories .navigation-button')[0],
     },
     on: {
       beforeInit: function (swiper) {
@@ -110,12 +348,14 @@ window.Webflow.push(() => {
     const mappedIndex = swiper.realIndex % slideCount;
 
     // Remove active class from all bullets
-    document.querySelectorAll('.pagination-bullet').forEach((bullet) => {
+    document.querySelectorAll('.section_success-stories .pagination-bullet').forEach((bullet) => {
       bullet.classList.remove('is-active');
     });
 
     // Add active class to the correct bullet
-    document.querySelectorAll('.pagination-bullet')[mappedIndex].classList.add('is-active');
+    document
+      .querySelectorAll('.section_success-stories .pagination-bullet')
+      [mappedIndex].classList.add('is-active');
   }
 
   ScrollTrigger.create({
