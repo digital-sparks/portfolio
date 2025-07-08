@@ -11,12 +11,12 @@ window.Webflow.push(() => {
 
     // Trigger Popup on exit intent
     document.addEventListener('mouseleave', (e) => {
-      if (e.clientY < 0 && timer > 8000) showExitIntent('exit_page');
+      if (e.clientY < 0 && timer > 5000) showExitIntent('exit_page');
     });
 
     // Trigger Popup after XXX milliseconds
     const minutes = 0.75;
-    const timerInterval = 5000; // in milliseconds
+    const timerInterval = 1000; // in milliseconds
     let timer = 0;
     let hasFiredPopup = false;
 

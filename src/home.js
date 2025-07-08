@@ -16,7 +16,6 @@ window.Webflow.push(() => {
       '.case-study_hover-content h3, .case-study_hover-content .case-study_metrics-wrap'
     );
     const row2 = slide.querySelector('.case-study_hover-image-wrap');
-    const counterElements = slide.querySelectorAll('.case-study_metrics-item .heading-style-h4');
 
     gsap.set(hoverWrap, { display: 'none', opacity: 0 });
     gsap.set(cursor, {
@@ -25,13 +24,12 @@ window.Webflow.push(() => {
     });
     gsap.set(row1, { yPercent: 15, opacity: 0 });
     gsap.set([row2], { yPercent: 5, opacity: 0 });
-    console.log(row1);
 
     let hasAnimatedNumbers = false;
 
     slide.addEventListener('mouseenter', () => {
       gsap
-        .timeline()
+        .timeline({ defaults: { overwrite: true } })
         .to(hoverWrap, {
           display: 'block',
           opacity: 1,
@@ -56,7 +54,7 @@ window.Webflow.push(() => {
             ease: 'power2.out',
             duration: 0.6,
           },
-          '<0.1'
+          '<0.05'
         )
         .to(
           row2,
@@ -69,47 +67,14 @@ window.Webflow.push(() => {
           '<+0.1'
         );
 
-      if (!hasAnimatedNumbers) {
-        counterElements.forEach((element) => {
-          const text = element.textContent;
-          const match = text.match(/\d+/);
-
-          if (match) {
-            const targetNumber = parseInt(match[0], 10);
-            const prefix = text.slice(0, match.index);
-            const suffix = text.slice(match.index + match[0].length);
-
-            // Create a proxy object to animate
-            const obj = { value: 0 };
-            element.textContent = prefix + obj.value + suffix;
-
-            gsap.to(obj, {
-              scrollTrigger: {
-                trigger: element,
-                start: 'center bottom',
-                // markers: true,
-              },
-              value: targetNumber,
-              duration: 5, // Animation duration in seconds
-              ease: 'power3.out', // You can change this easing function
-              onUpdate: function () {
-                const currentValue = Math.round(obj.value);
-                element.textContent = prefix + currentValue + suffix;
-              },
-              onComplete: function () {
-                element.textContent = prefix + targetNumber + suffix;
-              },
-            });
-          }
-        });
-        hasAnimatedNumbers = true;
-      }
-
       hoverWrap.addEventListener('click', () => {
         const ariaId = hoverWrap.getAttribute('aria-controls');
         const popup = document.getElementById(ariaId);
         const modal = popup.querySelector('.popup_complete-modal');
         const exitEls = popup.querySelectorAll('[fs-modal-element^="close"]');
+        const counterElements = popup.querySelectorAll(
+          '.case-study_modal-metrics-item .heading-style-h2'
+        );
 
         gsap.fromTo(
           modal,
@@ -124,6 +89,47 @@ window.Webflow.push(() => {
             ease: 'power3.out',
           }
         );
+
+        // if (!hasAnimatedNumbers) {
+        //   counterElements.forEach((element) => {
+        //     const text = element.textContent;
+        //     const match = text.match(/\d+/);
+
+        //     if (match) {
+        //       element.parentNode.style.height = `${element.parentNode.clientHeight}px`;
+        //       element.parentNode.style.width = `${element.parentNode.clientWidth + 12}px`;
+
+        //       const targetNumber = parseInt(match[0], 10);
+        //       const prefix = text.slice(0, match.index);
+        //       const suffix = text.slice(match.index + match[0].length);
+
+        //       // Create a proxy object to animate
+        //       const obj = { value: 0 };
+        //       element.textContent = prefix + obj.value + suffix;
+
+        //       setTimeout(() => {
+        //         gsap.to(obj, {
+        //           scrollTrigger: {
+        //             trigger: element,
+        //             start: 'center bottom',
+        //             // markers: true,
+        //           },
+        //           value: targetNumber,
+        //           duration: 1, // Animation duration in seconds
+        //           ease: 'power2.out', // You can change this easing function
+        //           onUpdate: function () {
+        //             const currentValue = Math.round(obj.value);
+        //             element.textContent = prefix + currentValue + suffix;
+        //           },
+        //           onComplete: function () {
+        //             element.textContent = prefix + targetNumber + suffix;
+        //           },
+        //         });
+        //       }, 200);
+        //     }
+        //   });
+        //   hasAnimatedNumbers = true;
+        // }
 
         exitEls.forEach((el) => {
           el.addEventListener('click', () => {
@@ -172,6 +178,7 @@ window.Webflow.push(() => {
           hoverWrap,
           {
             opacity: 0,
+            duration: 0.6,
             onComplete: () => {
               gsap.set(hoverWrap, { display: 'none' });
             },
@@ -533,5 +540,112 @@ window.Webflow.push(() => {
       }
       scrollTriggers.forEach((trigger) => trigger.kill());
     };
+  });
+
+  function initializeResourceAnimations(items = document) {
+    let portfolioItems;
+
+    if (items === document) {
+      portfolioItems = document.querySelectorAll('.portfolio_item');
+    } else {
+      // Handle array of items
+      portfolioItems = items.flatMap((item) => {
+        if (item.element && item.element.classList.contains('portfolio_item')) {
+          return [item.element];
+        }
+        return Array.from(item.element.querySelectorAll('.portfolio_item'));
+      });
+    }
+    portfolioItems.forEach((item) => {
+      if (!item.dataset.animationInitialized) {
+        const cursor = item.querySelector('.portfolio_cursor');
+        const thumbnail = item.querySelector('.portfolio_thumbnail img');
+        const link = item.querySelector('a');
+
+        gsap.set(cursor, {
+          y: '0.5rem',
+          x: '-0.5rem',
+          opacity: 0,
+        });
+
+        link.addEventListener('mouseenter', () => {
+          gsap
+            .timeline()
+            .to(cursor, {
+              y: '0rem',
+              x: '0rem',
+              opacity: 1,
+              duration: 0.35,
+              ease: 'power2.out',
+            })
+            .to(
+              thumbnail,
+              {
+                scale: 1.025,
+                duration: 0.25,
+              },
+              '<'
+            );
+        });
+
+        link.addEventListener('mouseleave', () => {
+          gsap
+            .timeline()
+            .to(cursor, {
+              y: '0.5rem',
+              x: '-0.5rem',
+              opacity: 0,
+              duration: 0.25,
+              ease: 'power2.out',
+              overwrite: true,
+            })
+            .to(
+              thumbnail,
+              {
+                scale: 1,
+                duration: 0.25,
+                overwrite: true,
+              },
+              '<'
+            );
+        });
+
+        item.dataset.animationInitialized = 'true';
+      }
+    });
+  }
+
+  // Initialize for initial document load
+  window.Webflow ||= [];
+  window.Webflow.push(() => {
+    initializeResourceAnimations();
+  });
+
+  // For the FSAttributes integration
+  window.FinsweetAttributes ||= [];
+  window.FinsweetAttributes.push([
+    'list',
+    (listInstances) => {
+      const [listInstance] = listInstances;
+
+      initializeResourceAnimations();
+
+      listInstance.effect(() => {
+        initializeResourceAnimations(listInstance.items.value);
+      });
+    },
+  ]);
+
+  const navHeight = document.querySelector('.nav_component').clientHeight;
+
+  gsap.to('.section_case-studies', {
+    scrollTrigger: {
+      trigger: '.section_portfolio',
+      start: `${navHeight}px bottom`,
+      end: 'top top',
+      scrub: true,
+    },
+    y: '5rem',
+    // opacity: 0.5,
   });
 });
