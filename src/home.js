@@ -2,14 +2,14 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Observer } from 'gsap/Observer';
 import Swiper from 'swiper';
-import { Navigation, Pagination, Mousewheel, Keyboard } from 'swiper/modules';
+import { Navigation, Pagination, Mousewheel, Keyboard, A11y } from 'swiper/modules';
 
 window.Webflow ||= [];
 window.Webflow.push(() => {
   gsap.registerPlugin(Observer, ScrollTrigger);
 
   document.querySelectorAll('.case-study_slide').forEach((slide, index) => {
-    const defaultWrap = slide.querySelector('.case-study_default-wrap');
+    // const defaultWrap = slide.querySelector('.case-study_default-wrap');
     const hoverWrap = slide.querySelector('.case-study_hover-wrap');
     const cursor = slide.querySelector('.case-study_popup-open-button');
     const row1 = slide.querySelectorAll(
@@ -67,24 +67,25 @@ window.Webflow.push(() => {
           '<+0.1'
         );
 
-      hoverWrap.addEventListener('click', () => {
-        const ariaId = hoverWrap.getAttribute('aria-controls');
+      slide.addEventListener('click', () => {
+        const ariaId = slide.getAttribute('aria-controls');
         const popup = document.getElementById(ariaId);
         const modal = popup.querySelector('.popup_complete-modal');
+
         const exitEls = popup.querySelectorAll('[fs-modal-element^="close"]');
-        const counterElements = popup.querySelectorAll(
-          '.case-study_modal-metrics-item .heading-style-h2'
-        );
+        // const counterElements = popup.querySelectorAll(
+        //   '.case-study_modal-metrics-item .heading-style-h2'
+        // );
 
         gsap.fromTo(
           modal,
           {
-            y: '5rem',
+            y: '3rem',
             scale: 0.98,
           },
           {
             y: '0rem',
-            duration: 0.6,
+            duration: 0.5,
             scale: 1,
             ease: 'power3.out',
           }
@@ -134,11 +135,11 @@ window.Webflow.push(() => {
         exitEls.forEach((el) => {
           el.addEventListener('click', () => {
             gsap.to(modal, {
-              y: '5rem',
+              y: '3rem',
               scale: 0.98,
               duration: 0.4,
               delay: 0.1,
-              ease: 'power3.out',
+              ease: 'power2.out',
             });
           });
         });
@@ -152,7 +153,8 @@ window.Webflow.push(() => {
           yPercent: 5,
           opacity: 0,
           ease: 'power2.in',
-          duration: 0.4,
+          duration: 0.2,
+          delay: 0.1,
         })
         .to(
           row1,
@@ -160,17 +162,7 @@ window.Webflow.push(() => {
             yPercent: 15,
             opacity: 0,
             ease: 'power2.in',
-            duration: 0.4,
-          },
-          '<+0.1'
-        )
-        .to(
-          cursor,
-          {
-            y: '0.25rem',
-            x: '-0.25rem',
-            ease: 'power2.in',
-            duration: 0.3,
+            duration: 0.2,
           },
           '<'
         )
@@ -178,9 +170,10 @@ window.Webflow.push(() => {
           hoverWrap,
           {
             opacity: 0,
-            duration: 0.6,
+            duration: 0.4,
             onComplete: () => {
               gsap.set(hoverWrap, { display: 'none' });
+              gsap.set(cursor, { y: '0.25rem', x: '-0.25rem' });
             },
           },
           '<'
@@ -222,7 +215,7 @@ window.Webflow.push(() => {
   // ————— MARQUEE SLIDER  ————— //
 
   const caseStudySwiper = new Swiper('.case-study_container', {
-    modules: [Mousewheel, Keyboard, Pagination, Navigation],
+    modules: [Mousewheel, Keyboard, Pagination, Navigation, A11y],
     wrapperClass: 'case-study_wrapper',
     slideClass: 'case-study_slide',
     slidesPerView: 'auto',
@@ -230,11 +223,11 @@ window.Webflow.push(() => {
     spaceBetween: 16,
     grabCursor: true,
     loop: false,
-    speed: 350,
+    speed: 250,
     breakpoints: {
       768: {
         spaceBetween: 24,
-        speed: 500,
+        speed: 350,
       },
     },
     mousewheel: {
@@ -254,35 +247,33 @@ window.Webflow.push(() => {
       el: '.section_case-studies .swiper-controls_pagination',
       bulletClass: 'pagination-bullet',
       bulletActiveClass: 'is-active',
+      clickable: true,
       renderBullet: function (index, className) {
-        return '<span class="' + className + ' is-dark"></span>';
+        return (
+          '<button type="button" class="' +
+          className +
+          ' is-dark" aria-label="Go to slide ' +
+          (index + 1) +
+          '"></button>'
+        );
       },
     },
     on: {
       beforeInit: function (swiper) {
         swiper.wrapperEl.style.gridColumnGap = 'unset';
+        // swiper.wrapperEl.style.transitionTimingFunction = 'cubic-bezier(0.62, 0.01, 0.41, 0.99)';
+      },
+      init: function (swiper) {
+        swiper.slides.forEach((slide) => {
+          const logos = slide.querySelectorAll('.logo_icon');
+          logos.forEach((logo) => {
+            logo.width = logo.dataset.width;
+            logo.height = logo.dataset.height;
+          });
+        });
       },
     },
   });
-
-  // const button = document.querySelector('.portfolio_component .button');
-  // const items = document.querySelectorAll('.portfolio_component .portfolio_item');
-  // let incrementer = window.innerWidth > 991 ? 6 : 4;
-  // let itemShown = incrementer;
-
-  // button.addEventListener('click', () => {
-  //   // Show next 4 items
-  //   for (let i = itemShown; i < itemShown + incrementer && i < items.length; i++) {
-  //     items[i].style.display = 'flex';
-  //   }
-
-  //   itemShown += incrementer;
-
-  //   // If all items are shown, hide the button
-  //   if (itemShown >= items.length) {
-  //     button.parentNode.style.display = 'none';
-  //   }
-  // });
 
   const slideCount = document.querySelectorAll('.testimonial_slide').length;
 
@@ -295,14 +286,17 @@ window.Webflow.push(() => {
   const paginationContainer = document.querySelector('.swiper-controls_pagination');
   paginationContainer.innerHTML = '';
   for (let i = 0; i < slideCount; i++) {
-    const bullet = document.createElement('span');
+    const bullet = document.createElement('button');
+    bullet.type = 'button';
     bullet.className = 'pagination-bullet';
+    bullet.setAttribute('aria-label', 'Go to slide ' + i);
+    bullet.setAttribute('tabindex', 0);
     bullet.dataset.index = i;
     paginationContainer.appendChild(bullet);
   }
 
   let testimonialSwiper = new Swiper('.testimonial_container', {
-    modules: [Mousewheel, Keyboard, Pagination, Navigation],
+    modules: [Mousewheel, Keyboard, Pagination, Navigation, A11y],
     wrapperClass: 'testimonial_wrapper',
     slideClass: 'testimonial_slide',
     slidesPerView: 'auto',
@@ -311,23 +305,25 @@ window.Webflow.push(() => {
     grabCursor: true,
     loop: true,
     initialSlide: slideCount - 1,
-    speed: 350,
+    speed: 300,
     breakpoints: {
       768: {
         spaceBetween: 24,
-        speed: 500,
+        speed: 400,
       },
     },
     mousewheel: {
       enabled: true,
       forceToAxis: true,
       thresholdDelta: 5,
+      releaseOnEdges: false,
     },
     keyboard: {
       enabled: true,
       onlyInViewport: true,
     },
     pagination: {
+      clickable: false,
       bulletClass: 'pagination-bullet',
       bulletActiveClass: 'is-active',
     },
@@ -338,8 +334,14 @@ window.Webflow.push(() => {
     on: {
       beforeInit: function (swiper) {
         swiper.wrapperEl.style.gridColumnGap = 'unset';
+        // swiper.wrapperEl.style.transitionTimingFunction = 'cubic-bezier(0.62, 0.01, 0.41, 0.99)';
       },
       init: function (swiper) {
+        swiper.slides.forEach((slide) => {
+          const logo = slide.querySelector('.logo_icon');
+          logo.width = logo.dataset.width;
+          logo.height = logo.dataset.height;
+        });
         // Set initial active bullet
         updateActiveBullet(swiper);
       },
@@ -357,12 +359,16 @@ window.Webflow.push(() => {
     // Remove active class from all bullets
     document.querySelectorAll('.section_success-stories .pagination-bullet').forEach((bullet) => {
       bullet.classList.remove('is-active');
+      bullet.removeAttribute('aria-current');
     });
 
     // Add active class to the correct bullet
     document
       .querySelectorAll('.section_success-stories .pagination-bullet')
       [mappedIndex].classList.add('is-active');
+    document
+      .querySelectorAll('.section_success-stories .pagination-bullet')
+      [mappedIndex].setAttribute('aria-current', true);
   }
 
   ScrollTrigger.create({
