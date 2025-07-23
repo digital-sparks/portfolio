@@ -134,13 +134,17 @@ window.Webflow.push(() => {
 
         exitEls.forEach((el) => {
           el.addEventListener('click', () => {
-            gsap.to(modal, {
-              y: '3rem',
-              scale: 0.98,
-              duration: 0.4,
-              delay: 0.1,
-              ease: 'power2.out',
-            });
+            gsap.fromTo(
+              modal,
+              { y: '0rem', scale: 1 },
+              {
+                y: '3rem',
+                scale: 0.98,
+                duration: 0.5,
+                delay: 0.15,
+                ease: 'power2.out',
+              }
+            );
           });
         });
       });
@@ -223,7 +227,7 @@ window.Webflow.push(() => {
     spaceBetween: 16,
     grabCursor: true,
     loop: false,
-    speed: 250,
+    speed: 300,
     breakpoints: {
       768: {
         spaceBetween: 24,
@@ -305,7 +309,7 @@ window.Webflow.push(() => {
     grabCursor: true,
     loop: true,
     initialSlide: slideCount - 1,
-    speed: 300,
+    speed: 350,
     breakpoints: {
       768: {
         spaceBetween: 24,
