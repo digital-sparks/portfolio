@@ -64,7 +64,7 @@ window.Webflow.push(() => {
       const siteVal = exitIntentAuditStep1.querySelector('#audit_website_url').value;
 
       document.querySelectorAll('input[name="audit_website_identifier"]').forEach((input) => {
-        input.value = emailVal;
+        input.value = siteVal;
       });
 
       document.querySelector('.modal_step1').style.display = 'none';
