@@ -61,9 +61,9 @@ window.Webflow.push(() => {
     exitIntentAuditStep1.addEventListener('submit', (event) => {
       event.preventDefault(); // Prevent form submission if needed
 
-      const emailVal = exitIntentAuditStep1.querySelector('#email').value;
+      const siteVal = exitIntentAuditStep1.querySelector('#audit_website_url').value;
 
-      document.querySelectorAll('input[name="audit_email_identifier"]').forEach((input) => {
+      document.querySelectorAll('input[name="audit_website_identifier"]').forEach((input) => {
         input.value = emailVal;
       });
 
