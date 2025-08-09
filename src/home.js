@@ -8,6 +8,30 @@ window.Webflow ||= [];
 window.Webflow.push(() => {
   gsap.registerPlugin(Observer, ScrollTrigger);
 
+  gsap.matchMedia().add('(min-width: 992px)', () => {
+    const serviceCardTl = gsap
+      .timeline({
+        paused: true,
+      })
+      .from('.services_card', {
+        rotateZ: 0,
+        opacity: 0,
+        y: '2rem',
+        duration: 0.9,
+        ease: 'power3.out',
+        stagger: 0.25,
+      });
+
+    ScrollTrigger.create({
+      trigger: '.services_cards-grid',
+      start: 'top 90%',
+      markers: false,
+      onEnter: () => {
+        serviceCardTl.play();
+      },
+    });
+  });
+
   document.querySelectorAll('.case-study_slide').forEach((slide, index) => {
     // const defaultWrap = slide.querySelector('.case-study_default-wrap');
     const hoverWrap = slide.querySelector('.case-study_hover-wrap');
