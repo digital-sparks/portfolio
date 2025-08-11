@@ -408,173 +408,173 @@ window.Webflow.push(() => {
     },
   });
 
-  const debounce = (func, wait) => {
-    let timeout;
-    return (...args) => {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => func(...args), wait);
-    };
-  };
+  // const debounce = (func, wait) => {
+  //   let timeout;
+  //   return (...args) => {
+  //     clearTimeout(timeout);
+  //     timeout = setTimeout(() => func(...args), wait);
+  //   };
+  // };
 
-  gsap.matchMedia().add('(min-width: 992px)', () => {
-    const scrollCards = gsap.utils.toArray('.scroll_card-item');
-    const cardButtons = gsap.utils.toArray('.scroll_card-item .button');
-    const nav = document.querySelector('.nav_component');
-    const servicesTopWrapper = document.querySelector('.services_top-wrapper');
-    const scrollComponent = document.querySelector('.scroll_component');
-    const servicesSection = document.querySelector('.section_services');
-    const scrollTriggers = [];
-    const offset = 96; //184;
+  // gsap.matchMedia().add('(min-width: 992px)', () => {
+  //   const scrollCards = gsap.utils.toArray('.scroll_card-item');
+  //   const cardButtons = gsap.utils.toArray('.scroll_card-item .button');
+  //   const nav = document.querySelector('.nav_component');
+  //   const servicesTopWrapper = document.querySelector('.services_top-wrapper');
+  //   const scrollComponent = document.querySelector('.scroll_component');
+  //   const servicesSection = document.querySelector('.section_services');
+  //   const scrollTriggers = [];
+  //   const offset = 96; //184;
 
-    const checkScrollCardsFit = () => {
-      const viewportHeight = window.innerHeight - offset;
-      const servicesTopWrapperHeight = servicesTopWrapper ? servicesTopWrapper.offsetHeight : 0;
-      const gapBetweenElements = 64; // 4rem gap between services wrapper and cards
+  //   const checkScrollCardsFit = () => {
+  //     const viewportHeight = window.innerHeight - offset;
+  //     const servicesTopWrapperHeight = servicesTopWrapper ? servicesTopWrapper.offsetHeight : 0;
+  //     const gapBetweenElements = 64; // 4rem gap between services wrapper and cards
 
-      // Find the tallest card
-      const tallestCardHeight = scrollCards.reduce(
-        (maxHeight, card) => Math.max(maxHeight, card.offsetHeight),
-        0
-      );
+  //     // Find the tallest card
+  //     const tallestCardHeight = scrollCards.reduce(
+  //       (maxHeight, card) => Math.max(maxHeight, card.offsetHeight),
+  //       0
+  //     );
 
-      // Check if both services wrapper and tallest card fit together (including gap)
-      const bothFit =
-        servicesTopWrapper &&
-        servicesTopWrapperHeight + gapBetweenElements + tallestCardHeight + 40 <= viewportHeight; // 40px extra buffer
+  //     // Check if both services wrapper and tallest card fit together (including gap)
+  //     const bothFit =
+  //       servicesTopWrapper &&
+  //       servicesTopWrapperHeight + gapBetweenElements + tallestCardHeight + 40 <= viewportHeight; // 40px extra buffer
 
-      // Check if just the tallest card fits (without services wrapper)
-      const onlyCardsFit = tallestCardHeight <= viewportHeight;
+  //     // Check if just the tallest card fits (without services wrapper)
+  //     const onlyCardsFit = tallestCardHeight <= viewportHeight;
 
-      // Set sticky position for services top wrapper if both fit
-      if (servicesTopWrapper) {
-        gsap.set(servicesTopWrapper, {
-          position: bothFit ? 'sticky' : 'static',
-          top: bothFit ? `${offset / 16}rem` : 'auto',
-        });
-      }
+  //     // Set sticky position for services top wrapper if both fit
+  //     if (servicesTopWrapper) {
+  //       gsap.set(servicesTopWrapper, {
+  //         position: bothFit ? 'sticky' : 'static',
+  //         top: bothFit ? `${offset / 16}rem` : 'auto',
+  //       });
+  //     }
 
-      // Calculate top position for cards based on which elements are sticky
-      const cardTopPosition = bothFit
-        ? `${(offset + servicesTopWrapperHeight + gapBetweenElements) / 16}rem` // Position after services wrapper + 4rem gap
-        : `${offset / 16}rem`; // Default position
+  //     // Calculate top position for cards based on which elements are sticky
+  //     const cardTopPosition = bothFit
+  //       ? `${(offset + servicesTopWrapperHeight + gapBetweenElements) / 16}rem` // Position after services wrapper + 4rem gap
+  //       : `${offset / 16}rem`; // Default position
 
-      // Set card positions
-      scrollCards.forEach((card) => {
-        gsap.set(card, {
-          position: bothFit || onlyCardsFit ? 'sticky' : 'static',
-          top: bothFit || onlyCardsFit ? cardTopPosition : 'auto',
-        });
-      });
+  //     // Set card positions
+  //     scrollCards.forEach((card) => {
+  //       gsap.set(card, {
+  //         position: bothFit || onlyCardsFit ? 'sticky' : 'static',
+  //         top: bothFit || onlyCardsFit ? cardTopPosition : 'auto',
+  //       });
+  //     });
 
-      // Create a scroll trigger to handle the services wrapper visibility
-      // when reaching the last card
-      if (scrollTriggers.length === 0 && bothFit && scrollCards.length > 0) {
-        const lastCard = scrollCards[scrollCards.length - 1];
+  //     // Create a scroll trigger to handle the services wrapper visibility
+  //     // when reaching the last card
+  //     if (scrollTriggers.length === 0 && bothFit && scrollCards.length > 0) {
+  //       const lastCard = scrollCards[scrollCards.length - 1];
 
-        scrollTriggers.push(
-          ScrollTrigger.create({
-            trigger: lastCard,
-            start: `top ${offset + servicesTopWrapperHeight + gapBetweenElements}px`,
-            end: `top ${offset + servicesTopWrapperHeight + gapBetweenElements - 100}px`,
-            scrub: 1,
-            animation: gsap.to(servicesTopWrapper, {
-              opacity: 0,
-              duration: 0.3,
-              ease: 'power2.out',
-            }),
-          })
-        );
-      }
-    };
+  //       scrollTriggers.push(
+  //         ScrollTrigger.create({
+  //           trigger: lastCard,
+  //           start: `top ${offset + servicesTopWrapperHeight + gapBetweenElements}px`,
+  //           end: `top ${offset + servicesTopWrapperHeight + gapBetweenElements - 100}px`,
+  //           scrub: 1,
+  //           animation: gsap.to(servicesTopWrapper, {
+  //             opacity: 0,
+  //             duration: 0.3,
+  //             ease: 'power2.out',
+  //           }),
+  //         })
+  //       );
+  //     }
+  //   };
 
-    const setupScrollAnimation = () => {
-      // Add navigation animation for the services section
-      if (servicesSection && nav) {
-        scrollTriggers.push(
-          ScrollTrigger.create({
-            trigger: servicesSection,
-            start: 'top 120',
-            end: 'bottom 120',
-            onEnter: () => {
-              // Hide navigation when entering the section
-              gsap.to(nav, {
-                yPercent: -100,
-                opacity: 1,
-                ease: 'power1.out',
-                duration: 0.35,
-              });
-            },
-            onEnterBack: () => {
-              // Hide navigation when scrolling back up into the section
-              gsap.to(nav, {
-                yPercent: -100,
-                opacity: 1,
-                ease: 'power1.out',
-                duration: 0.35,
-              });
-            },
-            onLeaveBack: () => {
-              // Show navigation when scrolling above the section
-              gsap.to(nav, {
-                yPercent: 0,
-                opacity: 1,
-                ease: 'power1.out',
-                duration: 0.35,
-              });
-            },
-            onLeave: () => {
-              // Show navigation when scrolling past the section
-              gsap.to(nav, {
-                yPercent: 0,
-                opacity: 1,
-                ease: 'power1.out',
-                duration: 0.35,
-              });
-            },
-          })
-        );
-      }
+  //   const setupScrollAnimation = () => {
+  //     // Add navigation animation for the services section
+  //     if (servicesSection && nav) {
+  //       scrollTriggers.push(
+  //         ScrollTrigger.create({
+  //           trigger: servicesSection,
+  //           start: 'top 120',
+  //           end: 'bottom 120',
+  //           onEnter: () => {
+  //             // Hide navigation when entering the section
+  //             gsap.to(nav, {
+  //               yPercent: -100,
+  //               opacity: 1,
+  //               ease: 'power1.out',
+  //               duration: 0.35,
+  //             });
+  //           },
+  //           onEnterBack: () => {
+  //             // Hide navigation when scrolling back up into the section
+  //             gsap.to(nav, {
+  //               yPercent: -100,
+  //               opacity: 1,
+  //               ease: 'power1.out',
+  //               duration: 0.35,
+  //             });
+  //           },
+  //           onLeaveBack: () => {
+  //             // Show navigation when scrolling above the section
+  //             gsap.to(nav, {
+  //               yPercent: 0,
+  //               opacity: 1,
+  //               ease: 'power1.out',
+  //               duration: 0.35,
+  //             });
+  //           },
+  //           onLeave: () => {
+  //             // Show navigation when scrolling past the section
+  //             gsap.to(nav, {
+  //               yPercent: 0,
+  //               opacity: 1,
+  //               ease: 'power1.out',
+  //               duration: 0.35,
+  //             });
+  //           },
+  //         })
+  //       );
+  //     }
 
-      scrollCards.forEach((card, index) => {
-        scrollTriggers.push(
-          ScrollTrigger.create({
-            animation: gsap.to(card, {
-              scale: 0.85,
-              opacity: 0.5,
-              transformOrigin: 'center 25%',
-              ease: 'none',
-            }),
-            scrub: true,
-            trigger: card,
-            start: `10% ${offset}px`,
-            end: 'bottom 64px',
-            onLeave: () => gsap.set(card, { opacity: 0 }),
-          })
-        );
-      });
-    };
+  //     scrollCards.forEach((card, index) => {
+  //       scrollTriggers.push(
+  //         ScrollTrigger.create({
+  //           animation: gsap.to(card, {
+  //             scale: 0.85,
+  //             opacity: 0.5,
+  //             transformOrigin: 'center 25%',
+  //             ease: 'none',
+  //           }),
+  //           scrub: true,
+  //           trigger: card,
+  //           start: `10% ${offset}px`,
+  //           end: 'bottom 64px',
+  //           onLeave: () => gsap.set(card, { opacity: 0 }),
+  //         })
+  //       );
+  //     });
+  //   };
 
-    checkScrollCardsFit();
-    setupScrollAnimation();
-    window.addEventListener('resize', debounce(checkScrollCardsFit, 250));
+  //   checkScrollCardsFit();
+  //   setupScrollAnimation();
+  //   window.addEventListener('resize', debounce(checkScrollCardsFit, 250));
 
-    return () => {
-      gsap.set([...scrollCards, '.scroll_card-grid > div:last-child', nav, servicesTopWrapper], {
-        clearProps: 'all',
-      });
-      gsap.set(scrollCards, {
-        position: 'static',
-        top: 'auto',
-      });
-      if (servicesTopWrapper) {
-        gsap.set(servicesTopWrapper, {
-          position: 'static',
-          top: 'auto',
-        });
-      }
-      scrollTriggers.forEach((trigger) => trigger.kill());
-    };
-  });
+  //   return () => {
+  //     gsap.set([...scrollCards, '.scroll_card-grid > div:last-child', nav, servicesTopWrapper], {
+  //       clearProps: 'all',
+  //     });
+  //     gsap.set(scrollCards, {
+  //       position: 'static',
+  //       top: 'auto',
+  //     });
+  //     if (servicesTopWrapper) {
+  //       gsap.set(servicesTopWrapper, {
+  //         position: 'static',
+  //         top: 'auto',
+  //       });
+  //     }
+  //     scrollTriggers.forEach((trigger) => trigger.kill());
+  //   };
+  // });
 
   function initializeResourceAnimations(items = document) {
     let portfolioItems;
