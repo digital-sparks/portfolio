@@ -47,79 +47,79 @@ window.Webflow.push(() => {
   }
 
   // ... existing code ...
-  const exitIntentAuditStep1 = document.querySelector('#wf-form-audit-popup-step-1');
+  // const exitIntentAuditStep1 = document.querySelector('#wf-form-audit-popup-step-1');
 
-  if (exitIntentAuditStep1) {
-    const completionDate = calculateCompletionDate();
-    document.querySelectorAll('#audit_completion_date, #audit_completion_date2').forEach((el) => {
-      el.textContent = formatFriendlyDate(completionDate);
-    });
-    document.querySelector('input[name="audit_completion_date"]').value = completionDate;
-    document.querySelector('input[name="audit_completion_date_text"]').value =
-      formatFriendlyDate(completionDate);
+  // if (exitIntentAuditStep1) {
+  //   const completionDate = calculateCompletionDate();
+  //   document.querySelectorAll('#audit_completion_date, #audit_completion_date2').forEach((el) => {
+  //     el.textContent = formatFriendlyDate(completionDate);
+  //   });
+  //   document.querySelector('input[name="audit_completion_date"]').value = completionDate;
+  //   document.querySelector('input[name="audit_completion_date_text"]').value =
+  //     formatFriendlyDate(completionDate);
 
-    exitIntentAuditStep1.addEventListener('submit', (event) => {
-      event.preventDefault(); // Prevent form submission if needed
+  //   exitIntentAuditStep1.addEventListener('submit', (event) => {
+  //     event.preventDefault(); // Prevent form submission if needed
 
-      const siteVal = exitIntentAuditStep1.querySelector('#audit_website_url').value;
+  //     const siteVal = exitIntentAuditStep1.querySelector('#audit_website_url').value;
 
-      document.querySelectorAll('input[name="audit_website_identifier"]').forEach((input) => {
-        input.value = siteVal;
-      });
+  //     document.querySelectorAll('input[name="audit_website_identifier"]').forEach((input) => {
+  //       input.value = siteVal;
+  //     });
 
-      document.querySelector('.modal_step1').style.display = 'none';
-      document.querySelector('.modal_step2').style.display = 'block';
-    });
+  //     document.querySelector('.modal_step1').style.display = 'none';
+  //     document.querySelector('.modal_step2').style.display = 'block';
+  //   });
 
-    document.getElementById('wf-form-audit-popup-step-2').addEventListener('submit', () => {
-      document.querySelector('.modal_step2').style.display = 'none';
-      document.querySelector('.modal_step3').style.display = 'block';
-    });
+  //   document.getElementById('wf-form-audit-popup-step-2').addEventListener('submit', () => {
+  //     document.querySelector('.modal_step2').style.display = 'none';
+  //     document.querySelector('.modal_step3').style.display = 'block';
+  //   });
 
-    document.getElementById('wf-form-audit-popup-step-3').addEventListener('submit', () => {
-      document.querySelector('.modal_step3').style.display = 'none';
-      document.querySelector('.modal_step4').style.display = 'block';
-    });
-  }
+  //   document.getElementById('wf-form-audit-popup-step-3').addEventListener('submit', () => {
+  //     document.querySelector('.modal_step3').style.display = 'none';
+  //     document.querySelector('.modal_step4').style.display = 'block';
+  //   });
+  // }
 
-  function calculateCompletionDate() {
-    const now = new Date();
-    let completionDate = new Date(now.getTime() + 48 * 60 * 60 * 1000); // Add 48 hours
+  // function calculateCompletionDate() {
+  //   const now = new Date();
+  //   let completionDate = new Date(now.getTime() + 48 * 60 * 60 * 1000); // Add 48 hours
 
-    // Adjust for weekends
-    while (completionDate.getDay() === 0 || completionDate.getDay() === 6) {
-      completionDate.setDate(completionDate.getDate() + 1);
-    }
+  //   // Adjust for weekends
+  //   while (completionDate.getDay() === 0 || completionDate.getDay() === 6) {
+  //     completionDate.setDate(completionDate.getDate() + 1);
+  //   }
 
-    return completionDate;
-  }
+  //   return completionDate;
+  // }
 
-  function formatFriendlyDate(date) {
-    const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
+  // function formatFriendlyDate(date) {
+  //   const months = [
+  //     'January',
+  //     'February',
+  //     'March',
+  //     'April',
+  //     'May',
+  //     'June',
+  //     'July',
+  //     'August',
+  //     'September',
+  //     'October',
+  //     'November',
+  //     'December',
+  //   ];
 
-    const day = date.getDate();
-    const month = months[date.getMonth()];
+  //   const day = date.getDate();
+  //   const month = months[date.getMonth()];
 
-    let suffix = 'th';
-    if (day === 1 || day === 21 || day === 31) suffix = 'st';
-    else if (day === 2 || day === 22) suffix = 'nd';
-    else if (day === 3 || day === 23) suffix = 'rd';
+  //   let suffix = 'th';
+  //   if (day === 1 || day === 21 || day === 31) suffix = 'st';
+  //   else if (day === 2 || day === 22) suffix = 'nd';
+  //   else if (day === 3 || day === 23) suffix = 'rd';
 
-    return `${month} ${day}${suffix}`;
-  }
+  //   return `${month} ${day}${suffix}`;
+  // }
 
   /*-------------------------------------------------------*/
   /* UTM PARAMS                                            */
