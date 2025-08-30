@@ -44,6 +44,12 @@ window.Webflow.push(() => {
         window.sessionStorage.setItem(`hasFiredPopup_${window.location}`, 'true');
       }
     }
+
+    exitIntent.querySelectorAll('form').forEach((form) => {
+      form.addEventListener('submit', () => {
+        exitIntent.querySelector(':scope > .modal_close').style.display = 'none';
+      });
+    });
   }
 
   // ... existing code ...
