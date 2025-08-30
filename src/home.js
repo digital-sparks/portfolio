@@ -670,16 +670,16 @@ window.Webflow.push(() => {
     },
   ]);
 
-  const navHeight = document.querySelector('.nav_component').clientHeight;
+  // const navHeight = document.querySelector('.nav_component').clientHeight;
 
-  gsap.to('.section_case-studies', {
-    scrollTrigger: {
-      trigger: '.section_portfolio',
-      start: `${navHeight}px bottom`,
-      end: 'top top',
-      scrub: true,
-    },
-    y: '5rem',
-    // opacity: 0.5,
-  });
+  // gsap.to('.section_case-studies', {
+  //   scrollTrigger: {
+  //     trigger: '.section_portfolio',
+  //     start: `${navHeight}px bottom`,
+  //     end: 'top top',
+  //     scrub: true,
+  //   },
+  //   y: '5rem',
+  //   // opacity: 0.5,
+  // });
 });
