@@ -7,7 +7,13 @@ const BUILD_DIRECTORY = 'dist';
 const PRODUCTION = process.env.NODE_ENV === 'production';
 
 // Config entrypoint files
-const ENTRY_POINTS = ['src/global.js', 'src/home.js', 'src/linkedin.js'];
+const ENTRY_POINTS = [
+  'src/global.js',
+  'src/home.js',
+  'src/linkedin.js',
+  'src/contact1.js',
+  'src/contact2.js',
+];
 
 // Config dev serving
 const LIVE_RELOAD = !PRODUCTION;
