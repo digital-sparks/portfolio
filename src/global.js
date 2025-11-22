@@ -9,25 +9,44 @@ window.Webflow.push(() => {
     exitIntent.style.display = 'none';
     exitIntent.style.opacity = 0;
 
+    // Check if we're on the contact page
+    const isContactPage = window.location.pathname === '/contact';
+
     // Trigger Popup on exit intent
     document.addEventListener('mouseleave', (e) => {
-      if (e.clientY < 0 && timer > 5000) showExitIntent('exit_page');
+      if (e.clientY < 0) {
+        // On contact page, show immediately on mouse leave
+        if (isContactPage) {
+          showExitIntent('exit_page');
+        } else {
+          // On other pages, require 5 seconds minimum
+          if (timer > 5000) showExitIntent('exit_page');
+        }
+      }
     });
 
-    // Trigger Popup after XXX milliseconds
+    // Trigger Popup after XXX milliseconds (only if NOT on contact page)
     const minutes = 0.75;
     const timerInterval = 1000; // in milliseconds
     let timer = 0;
     let hasFiredPopup = false;
+    let timerIntervalId = null;
 
-    const timerIntervalId = setInterval(() => {
-      timer += timerInterval;
-      if (timer >= minutes * 60000 && !hasFiredPopup) {
-        showExitIntent('time_on_page');
-        hasFiredPopup = true;
-        clearInterval(timerIntervalId);
-      }
-    }, timerInterval);
+    if (!isContactPage) {
+      timerIntervalId = setInterval(() => {
+        timer += timerInterval;
+        if (timer >= minutes * 60000 && !hasFiredPopup) {
+          showExitIntent('time_on_page');
+          hasFiredPopup = true;
+          clearInterval(timerIntervalId);
+        }
+      }, timerInterval);
+    } else {
+      // Still increment timer for contact page (needed for mouseleave check on other pages)
+      timerIntervalId = setInterval(() => {
+        timer += timerInterval;
+      }, timerInterval);
+    }
 
     // TRIGGER EXIT INTENT
     function showExitIntent(triggerType) {
@@ -42,6 +61,11 @@ window.Webflow.push(() => {
 
         hasFiredPopup = true;
         window.sessionStorage.setItem(`hasFiredPopup_${window.location}`, 'true');
+
+        // Clear timer when popup is shown
+        if (timerIntervalId) {
+          clearInterval(timerIntervalId);
+        }
       }
     }
 
@@ -52,80 +76,7 @@ window.Webflow.push(() => {
     });
   }
 
-  // ... existing code ...
-  // const exitIntentAuditStep1 = document.querySelector('#wf-form-audit-popup-step-1');
-
-  // if (exitIntentAuditStep1) {
-  //   const completionDate = calculateCompletionDate();
-  //   document.querySelectorAll('#audit_completion_date, #audit_completion_date2').forEach((el) => {
-  //     el.textContent = formatFriendlyDate(completionDate);
-  //   });
-  //   document.querySelector('input[name="audit_completion_date"]').value = completionDate;
-  //   document.querySelector('input[name="audit_completion_date_text"]').value =
-  //     formatFriendlyDate(completionDate);
-
-  //   exitIntentAuditStep1.addEventListener('submit', (event) => {
-  //     event.preventDefault(); // Prevent form submission if needed
-
-  //     const siteVal = exitIntentAuditStep1.querySelector('#audit_website_url').value;
-
-  //     document.querySelectorAll('input[name="audit_website_identifier"]').forEach((input) => {
-  //       input.value = siteVal;
-  //     });
-
-  //     document.querySelector('.modal_step1').style.display = 'none';
-  //     document.querySelector('.modal_step2').style.display = 'block';
-  //   });
-
-  //   document.getElementById('wf-form-audit-popup-step-2').addEventListener('submit', () => {
-  //     document.querySelector('.modal_step2').style.display = 'none';
-  //     document.querySelector('.modal_step3').style.display = 'block';
-  //   });
-
-  //   document.getElementById('wf-form-audit-popup-step-3').addEventListener('submit', () => {
-  //     document.querySelector('.modal_step3').style.display = 'none';
-  //     document.querySelector('.modal_step4').style.display = 'block';
-  //   });
-  // }
-
-  // function calculateCompletionDate() {
-  //   const now = new Date();
-  //   let completionDate = new Date(now.getTime() + 48 * 60 * 60 * 1000); // Add 48 hours
-
-  //   // Adjust for weekends
-  //   while (completionDate.getDay() === 0 || completionDate.getDay() === 6) {
-  //     completionDate.setDate(completionDate.getDate() + 1);
-  //   }
-
-  //   return completionDate;
-  // }
-
-  // function formatFriendlyDate(date) {
-  //   const months = [
-  //     'January',
-  //     'February',
-  //     'March',
-  //     'April',
-  //     'May',
-  //     'June',
-  //     'July',
-  //     'August',
-  //     'September',
-  //     'October',
-  //     'November',
-  //     'December',
-  //   ];
-
-  //   const day = date.getDate();
-  //   const month = months[date.getMonth()];
-
-  //   let suffix = 'th';
-  //   if (day === 1 || day === 21 || day === 31) suffix = 'st';
-  //   else if (day === 2 || day === 22) suffix = 'nd';
-  //   else if (day === 3 || day === 23) suffix = 'rd';
-
-  //   return `${month} ${day}${suffix}`;
-  // }
+  // ... rest of existing code remains the same ...
 
   /*-------------------------------------------------------*/
   /* UTM PARAMS                                            */
